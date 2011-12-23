@@ -8,6 +8,7 @@
 =end
 
 # HTML parser gems
+require 'rubygems'
 require 'open-uri'
 require 'nokogiri'
 
@@ -15,17 +16,15 @@ require 'nokogiri'
 # this class will parse a blog and print the posts of
 # the shopittome blog
 class ShopItToMeBlogParser
-
-
-    # the content might change, though, so it's an instance-level variable.
     @blogURL
     @doc
-    @posts = []
+    @posts
 
 
     # initializer method that sets the URL of the blog we'll parse
     def initialize(blogURL)
         @blogURL = blogURL
+        @posts = Array.new()
     end
 
 
@@ -45,25 +44,29 @@ class ShopItToMeBlogParser
         #     <p class="different-post-body">...</p>
         # this means we have to iterate over everything that is at that flat level.
         blogContent = @doc.css('#content_inner')
-        allPostsElements = blogContent.element_children()
+        allPostsElements = blogContent.children()
         thisPost = nil
         allPostsElements.each do |element|
-            puts element.node_type()
-=begin
-            if thisElement.node_type() == ''
-                @posts.push({
-                    "title"  => title.content,
-                    "images" => []
-                })
+
+            # post titles are <h2>'s...
+            if element.node_name() == 'h2'
+                thisPost = {
+                    # ... with a link inside            
+                    "title"  => element.css('a').inner_text(),
+                    "images" => Array.new()
+                }
+                @posts.push(thisPost)
             end
 
-            if image
-                push image info on to this blog post  images
+            # we need to fetch all the images for "this" blog post,
+            # which is unfortunately separated horizontally in a structure
+            # better suited by vertical separation, a (DOM) tree.
+            # That structure means checking every node we find recursively for images
+            # until we get to the next <h2>, which separates blog posts.
+            images = element.css('img').each do |image|
+                thisPost["images"].push(image)
             end
 
-            images = 
-            @posts.title
-=end
         end
     end
 
@@ -73,15 +76,17 @@ class ShopItToMeBlogParser
         # go throuch each post...
         i = 0
         until i >= @posts.length 
-            post = @post[i]
+            post = @posts[i]
 
             # ... print the title...
-            puts "#{i}. #{post["title"]}"
+            puts "#{i+1}. #{post["title"]}"
 
             # ... and all the images therein
             post["images"].each do |image|
-                puts "  - #{image["src"]}"
+                puts "    - #{image["src"]}"
             end
+
+            i = i + 1
         end
     end
 
@@ -92,7 +97,6 @@ class ShopItToMeBlogParser
         self.parsePosts()
         self.printPosts()
     end
-
 
 end
 
