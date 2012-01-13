@@ -30,6 +30,7 @@ class ShopItToMeBlogParser
 
     # fetches the latest source from the blog URL and parses it
     def getHTML
+        puts "fetching the blog at #{ @blogURL }..."
         @doc = Nokogiri::HTML(open(@blogURL))
     end
 
