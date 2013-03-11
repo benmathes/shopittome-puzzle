@@ -4,7 +4,7 @@
     job well, especially since the puzzle is so specialized. Some of my comments 
     may be overly verbose and explain things obvious to someone who has spent a 
     lot of time in Ruby; As I am not an expert in Ruby, what is obvious and what
-     needs documentation to a ruby export is as of yet unknown to me.
+    needs documentation to a ruby export is as of yet unknown to me.
 =end
 
 # HTML parser gems
